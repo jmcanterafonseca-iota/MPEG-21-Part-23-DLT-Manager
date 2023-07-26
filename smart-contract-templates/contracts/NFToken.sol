@@ -9,14 +9,15 @@ contract NFToken is ERC721URIStorage {
 
     Counters.Counter private _tokenIds;
 
-    constructor(string memory name, string memory symbol)
-        ERC721(name, symbol)
-    {}
+    constructor(
+        string memory name,
+        string memory symbol
+    ) ERC721(name, symbol) {}
 
-    function newToken(address receiver, string memory tokenURI)
-        public
-        returns (uint256)
-    {
+    function newToken(
+        address receiver,
+        string memory tokenURI
+    ) public returns (uint256) {
         _tokenIds.increment();
 
         uint256 newTokenId = _tokenIds.current();
