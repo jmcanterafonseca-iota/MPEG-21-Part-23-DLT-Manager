@@ -18,14 +18,19 @@
  *
  */
 
-//const HDWalletProvider = require('@truffle/hdwallet-provider');
-//const fs = require('fs');
-//const secret = fs.readFileSync('.secret').toString();
-//const infuraKey = secret.substr(0, secret.indexOf(' '));
-//const mnemonic = secret.substr(secret.indexOf(' ')).trim();
-//const ropstenProvider = () =>
-//  new HDWalletProvider(mnemonic, `https://ropsten.infura.io/v3/` + infuraKey);
-//const ropstenProvider = {};
+const account = '0x3Bb7BDb47aF628cAD372e81a3984ED208035668f'
+const privateKeys = ["38e8a09e1d159ab1ea57aae819ad216588bbb917bf0352d2752a746a97f7f807"]
+const rpcUrl = 'http://localhost/wasp/api/v1/chains/tst1prxtl08jxpk6mzjlz89xgudeqdxsd35ru7vd2jksqc2vpajvuyl4v9lqghd/evm'
+
+
+
+const HDWalletProvider = require('@truffle/hdwallet-provider');
+const provider = new HDWalletProvider(privateKeys, rpcUrl);
+const { web } = require('webpack');
+
+const ropstenProvider = () =>
+  new HDWalletProvider(mnemonic, `https://ropsten.infura.io/v3/` + infuraKey);
+
 
 module.exports = {
   /**
@@ -49,6 +54,12 @@ module.exports = {
       host: '127.0.0.1', // Localhost (default: none)
       port: 8545, // Standard Ethereum port (default: none)
       network_id: '*', // Any network (default: none)
+    },
+
+    iota: {
+      provider: provider,
+      from: account,
+      network_id: '*',
     },
 
     // Another network with more advanced options...
