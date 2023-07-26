@@ -1,24 +1,6 @@
-# MPEG-21-Part-23 Smart Contract for Media (DLT-Manager)
+# MPEG-21-Part-23 Smart Contract for Media DLT-Manager
 
-Panos Kudumakis, Mirko Zichichi, Víctor Rodríguez-Doncel, Marina Ljubojevic, Mohamed Allouche, Alexandre Moreaux and Mihai Mitra
-
-[**Demo**](https://scm.linkeddata.es) - [**MPEG Whitepaper**](https://www.mpeg.org/wp-content/uploads/mpeg_meetings/138_OnLine/w21537.zip)
-
-## Abstract
-
-In the last few years, MPEG has developed a set of standardized RDF ontologies and XML schemas for codifying intellectual property (IP) rights information related to music and media. ISO/IEC 21000-19 Media Value Chain Ontology (MVCO) facilitates rights tracking for fair, timely, and transparent payment of royalties by capturing user roles and their permissible actions on a particular IP entity. ISO/IEC 21000-19/AMD1 Audio Value Chain Ontology (AVCO) extends MVCO functionality related to describing IP entities in the audio domain, e.g., multitrack audio and time segments. ISO/IEC 21000-21 (2nd Ed) Media Contract Ontology (MCO) facilitates the conversion of narrative contracts to digital ones related to exploiting IP rights, payments, and notifications. For the latter, XML schemas have been developed as ISO/IEC 21000-20 (2nd Ed) Contract Expression Language (CEL).
-Furthermore, the axioms in these XML schemas and RDF ontologies can drive the execution of rights-related workflows in controlled environments, e.g., Distributed Ledger Technologies (DLTs), where transparency and interoperability are favored for fair trade of music and media. Thus, the aim of **ISO/IEC 21000-23 Smart Contracts for Media** is to provide the means (e.g., APIs) for converting these XML and RDF media contracts to smart contracts that can be executed on existing DLT environments.
-By doing this conversion in a standard way for several smart contract languages, MPEG-21 CEL/MCO schemas and ontologies will prevail as the interlingua for transferring verified contractual data from one DLT to another.
-Another essential feature of this standard is that it allows binding the clauses of a smart contract with those of a narrative contract and vice versa. In this way, each party signing a smart contract precisely knows what the clauses stored in the smart contract express.
-
-## Ontology objects relations with DLTs
-
-In order to bring what the MPEG-21 framework can express in a DLT, some relationships between MPEG-21 elements and DLT components can be mapped out. The following mapping is used in converting MPEG-21 CEL/MCO contracts to smart contracts for media and vice versa.
-
-1. Contract - Smart contract for media: the MPEG-21 CEL/MCO contract element is the one that includes or refers to the digitalized contractual information extracted from a narrative contract. In comparison, the smart contract for media is the result of the conversion process from the MPEG-21 CEL/MCO contract. Thus, the counterpart of an instance of a MPEG-21 CEL/MCO contract is a unique smart contract for media deployed in a specific DLT.
-2. Party (user) - DLT address: a party element is the representation of the identity of a user or organization bound by the narrative contract. Since identities in DLTs are represented through addresses, the party element counterpart is a DLT address. Thus, a party identity represented by a DLT address may also be authenticated in the DLT and referenced in a smart contract for media.
-3. IP entity - Non-fungible token: an IP entity element represents an asset, and the reference to this asset can be stored in a DLT. This representation of an asset may be serialized according to the concept of non-fungible tokens. Thus, in smart contracts, an IP entity may be represented by a token. Then, the entire set of information related to a specific IP entity is linkable to the associated token.
-4. Deontic expression (action, fact) - Non-fungible token: a deontic expression encompasses the properties of an agreed machine-readable contract clause regulating the parties' actions, e.g., obligations, permissions, and prohibitions. This clause representation may also be serialized following the non-fungible tokens associated with the smart contracts for media.
+This library allows the deployment and parsing of Smart Contract for Media into an EVM-compatible chain.
 
 ## Smart Contract for Media and Non Fungible Tokens
 
