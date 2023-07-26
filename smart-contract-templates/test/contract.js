@@ -1,4 +1,4 @@
-const mco = require('../../example.json');
+const mco = require('../../test/example.json');
 const Contract = artifacts.require('Contract.sol');
 const NFToken = artifacts.require('NFToken.sol');
 
@@ -7,11 +7,14 @@ contract('Contract', (accounts) => {
   var alice = accounts[1];
 
   it('should create a new contract and mint a new obligation to alice', async () => {
-    const mcoCont = mco[mco.contracts[0]];
+    const mcoCont = mco;
     const partiesAcc = accounts.slice(2, 2 + mcoCont.parties.length);
 
     const token = await NFToken.deployed();
-    const resTok = await token.newToken(alice, mcoCont.deontics[0]);
+    const resTok = await token.newToken(
+      alice,
+      mcoCont.deontics[Object.keys(mcoCont.deontics)[0]]
+    );
 
     const dlist = [resTok.logs[0].args.tokenId];
     const olist = [new web3.utils.BN(2)];
@@ -31,7 +34,7 @@ contract('Contract', (accounts) => {
       new web3.utils.BN(1),
       new web3.utils.BN(20),
     ];
-    const contentUri = mco.contracts[0];
+    const contentUri = mco;
     const contentHash = web3.utils.asciiToHex(contentUri);
 
     const cont = await Contract.new(

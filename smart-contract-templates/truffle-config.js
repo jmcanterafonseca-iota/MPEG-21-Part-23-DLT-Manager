@@ -17,20 +17,19 @@
  * phrase from a file you've .gitignored so it doesn't accidentally become public.
  *
  */
+require('dotenv').config();
 
-const account = '0x3Bb7BDb47aF628cAD372e81a3984ED208035668f'
-const privateKeys = ["38e8a09e1d159ab1ea57aae819ad216588bbb917bf0352d2752a746a97f7f807"]
-const rpcUrl = 'http://localhost/wasp/api/v1/chains/tst1prxtl08jxpk6mzjlz89xgudeqdxsd35ru7vd2jksqc2vpajvuyl4v9lqghd/evm'
-
-
+const phrase = process.env.IOTA_WASP_MNEMONIC;
+const chain = process.env.IOTA_WASP_CHAIN;
+const providerOrUrl = `http://localhost/wasp/api/v1/chains/${chain}/evm`;
 
 const HDWalletProvider = require('@truffle/hdwallet-provider');
-const provider = new HDWalletProvider(privateKeys, rpcUrl);
-const { web } = require('webpack');
-
-const ropstenProvider = () =>
-  new HDWalletProvider(mnemonic, `https://ropsten.infura.io/v3/` + infuraKey);
-
+const provider = new HDWalletProvider({
+  mnemonic: {
+    phrase,
+  },
+  providerOrUrl,
+});
 
 module.exports = {
   /**
@@ -58,35 +57,10 @@ module.exports = {
 
     iota: {
       provider: provider,
-      from: account,
+      //from: account,
+      //gas: 7721975,
       network_id: '*',
     },
-
-    // Another network with more advanced options...
-    // advanced: {
-    // port: 8777,             // Custom port
-    // network_id: 1342,       // Custom network
-    // gas: 8500000,           // Gas sent with each transaction (default: ~6700000)
-    // gasPrice: 20000000000,  // 20 gwei (in wei) (default: 100 gwei)
-    // from: <address>,        // Account to send txs from (default: accounts[0])
-    // websockets: true        // Enable EventEmitter interface for web3 (default: false)
-    // },
-    // Useful for deploying to a public network.
-    // NB: It's important to wrap the provider as a function.
-    //ropsten: {
-    //  provider: ropstenProvider,
-    //  network_id: 3, // Ropsten's id
-    //  gas: 5500000, // Ropsten has a lower block limit than mainnet
-    //  confirmations: 2, // # of confs to wait between deployments. (default: 0)
-    //  timeoutBlocks: 200, // # of blocks before a deployment times out  (minimum/default: 50)
-    //  skipDryRun: true, // Skip dry run before migrations? (default: false for public nets )
-    //},
-    // Useful for private networks
-    // private: {
-    // provider: () => new HDWalletProvider(mnemonic, `https://network.io`),
-    // network_id: 2111,   // This network is yours, in the cloud.
-    // production: true    // Treats this network as if it was a public net. (default: false)
-    // }
   },
 
   // Set default mocha options here, use special reporters etc.
