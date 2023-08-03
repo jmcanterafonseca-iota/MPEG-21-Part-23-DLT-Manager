@@ -20,8 +20,9 @@
 require('dotenv').config();
 
 const phrase = process.env.IOTA_WASP_MNEMONIC;
+const url = process.env.IOTA_WASP_URL;
 const chain = process.env.IOTA_WASP_CHAIN;
-const providerOrUrl = `http://localhost/wasp/api/v1/chains/${chain}/evm`;
+const providerOrUrl = `${url}/wasp/api/v1/chains/${chain}/evm`;
 
 const HDWalletProvider = require('@truffle/hdwallet-provider');
 const provider = new HDWalletProvider({

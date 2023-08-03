@@ -1,0 +1,114 @@
+@prefix mco-ipre: <urn:mpeg:mpeg21:mco:ipre:2012#> .
+@prefix owl:   <http://www.w3.org/2002/07/owl#> .
+@prefix mvco:  <http://purl.oclc.org/NET/mvco.owl#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix mco-core: <urn:mpeg:mpeg21:mco:core:2012#> .
+@prefix rdfs:  <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix mco-pane: <urn:mpeg:mpeg21:mco:pane:2015#> .
+@prefix mco-rele: <urn:mpeg:mpeg21:mco:rele:2015#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/#> .
+
+<URI:40000000C1>
+        a                         mco-core:Contract ;
+        mco-core:hasParty         <URI:40000000X1>, <URI:40000001X1>, <URI:40000000X2>, <URI:40000001X2>;
+        mco-core:hasGoverningLaw  "Code of Copyright and Related Rights" ;
+        mco-core:hasCourt         "Lisbon" .
+
+
+
+
+
+
+
+
+
+
+
+<URI:40000000X1>
+        a                       mco-core:Organization ;
+        dc:description          "Publisher" ;
+        dc:identifier           "did:iota:main:H3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV" ;
+        mco-core:hasSignatory   <URI:40000001X1> .
+
+<URI:40000001X1>
+        a               mvco:User ;
+        dc:description  "Publisher Signatory" ;
+        dc:identifier   "did:ebsi:2fWFxBbnf6FLW9ckwyCBnKmcMGcUV9LYJoXtgQkHcHJm" .
+
+<URI:40000000X2>
+        a                       mco-core:Organization ;
+        dc:description          "Record Label" ;
+        dc:identifier           "did:iota:main:A4C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPD" ;
+        mco-core:hasSignatory   <URI:40000001X2> .
+
+<URI:40000001X2>
+        a               mvco:User ;
+        dc:description  "Record Label Signatory" ;
+        dc:identifier   "did:ebsi:1fWFxBbnf6FLW9ckwyCBnKmcMGcUV9LYJoXtgQkHcHJf" .
+
+
+
+
+
+
+
+
+
+
+
+<URI:40000000P1>
+        a                       mvco:Permission ;
+        dc:description          "Owner grants to Licensee the nonexclusive right, privilege and license, during the term of the copyright of said Work and all renewals and extensions thereof, to use the Work, and to make and/or use arrangements thereof, in the manufacture and sale of parts of instruments serving to reproduce the Work." ;
+        mco-core:issuedIn       <URI:40000000C1> ;
+        mvco:issuedBy           <URI:40000000X1> ;
+        mco-core:permitsAction  <URI:40000001A0> ;
+        mco-core:implements     <URI:4000000T01> .
+
+<URI:40000001A0>
+        a                             mvco:MakeWorkManifestation ;
+        mvco:actedBy                  <URI:40000000X2> .
+
+<URI:40000000P2>
+        a                       mvco:Permission ;
+        dc:description          "Owner grants to Licensee the nonexclusive right, privilege and license, during the term of the copyright of said Work and all renewals and extensions thereof, to use the Work, and to make and/or use arrangements thereof, in the manufacture and sale of parts of instruments serving to reproduce the Work." ;
+        mco-core:issuedIn       <URI:40000000C1> ;
+        mvco:issuedBy           <URI:40000000X2> ;
+        mco-core:permitsAction  <URI:40000002A0> ;
+        mco-core:implements     <URI:4000000T01> .
+
+<URI:40000002A0>
+        a                             mvco:Distribute ;
+        mvco:actedBy                  <URI:40000000X2> .
+
+<URI:40000000O1>
+        a                         mco-core:Obligation ;
+        dc:description                "Licensee shall pay to Owner royalties at the following rates on all copies containing the above-named musical Works manufactured, sold and paid for during the term of the Work's copyright and all renewals and extensions thereof." ;
+        mco-core:issuedIn         <URI:40000000C1> ;
+        mvco:issuedBy             <URI:40000000X1> ;
+        mco-core:obligatesAction  <URI:40000000A2> ;
+        mco-core:implements       <URI:4000000T02> .
+
+<URI:40000000A2>
+        a                             mco-pane:Payment ;
+        mvco:actedBy                  <URI:40000000X1> ;
+        mco-pane:hasBeneficiary       <URI:40000000X2> ;
+        mco-pane:hasIncomeSource      <URI:40000001A0>, <URI:40000002A0> ;
+        mco-pane:hasIncomePercentage  50 .
+
+
+
+
+
+
+
+
+
+
+
+<URI:4000000T01>
+        a                             mco-core:TextualClause;
+        mco-core:text                 "Owner grants to Licensee the nonexclusive right, privilege and license, during the term of the copyright of said Work and all renewals and extensions thereof, to use the Work, and to make and/or use arrangements thereof, in the manufacture and sale of parts of instruments serving to reproduce the Work." .
+
+<URI:4000000T02>
+        a                             mco-core:TextualClause;
+        mco-core:text                 "Licensee shall pay to Owner royalties at the following rates on all copies containing the above-named musical Works manufactured, sold and paid for during the term of the Work's copyright and all renewals and extensions thereof." .

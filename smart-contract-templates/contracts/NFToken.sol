@@ -9,6 +9,11 @@ contract NFToken is ERC721URIStorage {
 
     Counters.Counter private _tokenIds;
 
+    /**
+     * @dev Emitted when `tokenId` token is reserved.
+     */
+    event Reserved(uint256 indexed tokenId);
+
     constructor(
         string memory name,
         string memory symbol
@@ -25,5 +30,25 @@ contract NFToken is ERC721URIStorage {
         _setTokenURI(newTokenId, tokenURI);
 
         return newTokenId;
+    }
+
+    function reserveId() public returns (uint256) {
+        _tokenIds.increment();
+        uint256 newTokenId = _tokenIds.current();
+
+        emit Reserved(newTokenId);
+
+        return newTokenId;
+    }
+
+    function newTokenFromReserved(
+        address receiver,
+        string memory tokenURI,
+        uint256 reserved
+    ) public returns (uint256) {
+        _mint(receiver, reserved);
+        _setTokenURI(reserved, tokenURI);
+
+        return reserved;
     }
 }

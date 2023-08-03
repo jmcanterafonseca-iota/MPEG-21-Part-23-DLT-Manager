@@ -1,10 +1,13 @@
 const {
   generateSmartContractSpecification,
+  obtainSmartContractSpecification,
   MockStorage,
+  OffChainStorage,
   EthereumDeployer,
   EthereumParser,
-} = require('..');
+} = require('../src');
 const HDWalletProvider = require('@truffle/hdwallet-provider');
+const fs = require('fs');
 
 // Create a `.env` file containing these informations:
 //IOTA_WASP_MNEMONIC="angle ...... meadow cereal"
@@ -13,11 +16,14 @@ const HDWalletProvider = require('@truffle/hdwallet-provider');
 require('dotenv').config();
 
 const phrase = process.env.IOTA_WASP_MNEMONIC;
+const url = process.env.IOTA_WASP_URL;
 const chain = process.env.IOTA_WASP_CHAIN;
-const providerOrUrl = `http://localhost/wasp/api/v1/chains/${chain}/evm`;
-const networkId = '1074';
+const chainId = process.env.IOTA_WASP_CHAIN_ID;
+const providerOrUrl = `${url}/wasp/api/v1/chains/${chain}/evm`;
 const mco = require('./example.json');
 const bindings = require('./bindings.json');
+const bindings2 = require('./bindings2.json');
+const ttlPath = './mechanical-license.ttl';
 
 const generate = () => {
   return generateSmartContractSpecification(mco);
@@ -30,13 +36,10 @@ const deploy = async (smartContractSpecification, ipfs) => {
     },
     providerOrUrl,
   });
-  const deployer = new EthereumDeployer(
-    provider,
-    ipfs,
-    smartContractSpecification,
-    bindings,
-    networkId
-  );
+  const deployer = new EthereumDeployer(provider, ipfs, chainId);
+
+  deployer.setMediaSC(smartContractSpecification);
+  deployer.setPartiesBindings(bindings);
 
   await deployer.setMainAddressIndex(0);
   const res = await deployer.deploySmartContracts();
@@ -56,7 +59,7 @@ const parse = async (address, ipfs) => {
     // 'http://127.0.0.1:8545'
     ipfs,
     address,
-    networkId
+    chainId
   );
   let res = await pars.parseSmartContract();
   provider.engine.stop();
@@ -64,17 +67,49 @@ const parse = async (address, ipfs) => {
 };
 
 const main = async () => {
-  const ipfs = new MockStorage();
   const smartContractSpecification = generate();
+  const ipfs = new OffChainStorage();
+  await ipfs.start();
   let address = await deploy(smartContractSpecification, ipfs);
   //const address = '0x732f33Cb168d8A3da77Dc2811676c0b99fDB25a1';
   //await sleep(2000);
   //console.log('Parse');
-  console.log(ipfs.storage);
+  //console.log(ipfs.storage);
   res = await parse(address, ipfs);
+  await ipfs.stop();
   console.log(res);
+};
+
+const obtain = async (ttl, ipfs) => {
+  const provider = new HDWalletProvider({
+    mnemonic: {
+      phrase,
+    },
+    providerOrUrl,
+  });
+  const deployer = new EthereumDeployer(provider, ipfs, chainId);
+  await deployer.setMainAddressIndex(0);
+
+  const spec = await obtainSmartContractSpecification(ttl, ipfs, deployer);
+
+  deployer.setMediaSC(spec.specification);
+  deployer.setPartiesBindings(bindings2);
+
+  const res = await deployer.deploySmartContractsReserved();
+  provider.engine.stop();
+  return res.options.address;
+};
+
+const main2 = async () => {
+  const ttl = fs.readFileSync(ttlPath, 'utf-8');
+
+  const ipfs = new OffChainStorage();
+  await ipfs.start();
+  let res = await obtain(ttl, ipfs);
+  console.log(res);
+  await ipfs.stop();
 };
 
 const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 
-main();
+main2();
