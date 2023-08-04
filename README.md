@@ -5,6 +5,11 @@ This library allows the deployment and parsing of Smart Contract for Media into 
 ## Install
 
 ```
+// In the parent folder clone the MCO parser repo
+git clone https://github.com/iotaledger/MPEG-21-Part-23-MCO-Parser
+// Then clone this repo
+git clone https://github.com/iotaledger/MPEG-21-Part-DLT-Manager
+cd MPEG-21-Part-DLT-Manager
 npm install
 ```
 
