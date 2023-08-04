@@ -12,6 +12,8 @@ const fs = require('fs');
 // Create a `.env` file containing these informations:
 //IOTA_WASP_MNEMONIC="angle ...... meadow cereal"
 //IOTA_WASP_CHAIN="tst1pq6hayf.....6pw6mcvre74jzhu4qde"
+//IOTA_WASP_CHAIN_ID="1075"
+//IOTA_WASP_URL="http://localhost"
 require('dotenv').config();
 
 const phrase = process.env.IOTA_WASP_MNEMONIC;
