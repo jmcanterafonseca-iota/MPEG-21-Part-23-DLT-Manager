@@ -12,7 +12,7 @@ contract NFToken is ERC721URIStorage {
     /**
      * @dev Emitted when `tokenId` token is reserved.
      */
-    event Reserved(uint256 indexed tokenId);
+    event Reserved(uint256 indexed start, uint256 indexed end);
 
     constructor(
         string memory name,
@@ -32,13 +32,16 @@ contract NFToken is ERC721URIStorage {
         return newTokenId;
     }
 
-    function reserveId() public returns (uint256) {
+    function reserveIds(uint256 toReserve) public {
         _tokenIds.increment();
-        uint256 newTokenId = _tokenIds.current();
+        uint256 start = _tokenIds.current();
 
-        emit Reserved(newTokenId);
+        for (uint256 i = 1; i < toReserve; i++) {
+            _tokenIds.increment();
+        }
+        uint256 end = _tokenIds.current();
 
-        return newTokenId;
+        emit Reserved(start, end);
     }
 
     function newTokenFromReserved(
