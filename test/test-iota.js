@@ -12,7 +12,6 @@ const fs = require('fs');
 // Create a `.env` file containing these informations:
 //IOTA_WASP_MNEMONIC="angle ...... meadow cereal"
 //IOTA_WASP_CHAIN="tst1pq6hayf.....6pw6mcvre74jzhu4qde"
-
 require('dotenv').config();
 
 const phrase = process.env.IOTA_WASP_MNEMONIC;
@@ -71,10 +70,6 @@ const main = async () => {
   const ipfs = new OffChainStorage();
   await ipfs.start();
   let address = await deploy(smartContractSpecification, ipfs);
-  //const address = '0x732f33Cb168d8A3da77Dc2811676c0b99fDB25a1';
-  //await sleep(2000);
-  //console.log('Parse');
-  //console.log(ipfs.storage);
   res = await parse(address, ipfs);
   await ipfs.stop();
   console.log(res);
