@@ -32,6 +32,14 @@ const provider = new HDWalletProvider({
   providerOrUrl,
 });
 
+stableProvider = new HDWalletProvider({
+  mnemonic: {
+    phrase
+  },
+  providerOrUrl: 'https://json-rpc.evm.stable.iota-ec.net',
+});
+
+
 module.exports = {
   /**
    * Networks define how you connect to your ethereum client and let you set the
@@ -58,6 +66,13 @@ module.exports = {
 
     iota: {
       provider: provider,
+      //from: account,
+      //gas: 7721975,
+      network_id: '*',
+    },
+
+    stable: {
+      provider: stableProvider,
       //from: account,
       //gas: 7721975,
       network_id: '*',
