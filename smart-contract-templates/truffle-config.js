@@ -25,14 +25,17 @@ const chain = process.env.IOTA_WASP_CHAIN;
 const providerOrUrl = `${url}/wasp/api/v1/chains/${chain}/evm`;
 
 const HDWalletProvider = require('@truffle/hdwallet-provider');
-const provider = new HDWalletProvider({
+
+// Generic provider for IOTA Wasp
+const iotaProvider = new HDWalletProvider({
   mnemonic: {
     phrase,
   },
   providerOrUrl,
 });
 
-stableProvider = new HDWalletProvider({
+// Provider for stable EBSI network
+const iotaStableEBSIProvider = new HDWalletProvider({
   mnemonic: {
     phrase
   },
@@ -65,16 +68,13 @@ module.exports = {
     },
 
     iota: {
-      provider: provider,
-      //from: account,
-      //gas: 7721975,
+      provider: iotaProvider,
       network_id: '*',
     },
 
+    // stable EBSI network
     stable: {
-      provider: stableProvider,
-      //from: account,
-      //gas: 7721975,
+      provider: iotaStableEBSIProvider,
       network_id: '*',
     },
   },
