@@ -5,6 +5,7 @@ const {
 const { MockStorage } = require('../lib/storage/mockStorage');
 const { EthereumDeployer } = require('../lib/eth/deployer');
 const { EthereumParser } = require('../lib/eth/parser');
+const { WalletService } = require("../wallet/lib/walletService");
 
 module.exports = {
   generateSmartContractSpecification,
@@ -12,4 +13,5 @@ module.exports = {
   MockStorage,
   EthereumDeployer,
   EthereumParser,
+  WalletService,
 };
