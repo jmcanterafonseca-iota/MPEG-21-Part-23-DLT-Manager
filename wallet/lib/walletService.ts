@@ -22,24 +22,41 @@ export interface IdentityAttribute {
 }
 
 export class WalletService {
-	walletServiceBaseURL: string
+	private walletServiceBaseURL: string;
+	private walletServiceToken?: string;
+	private headers: Headers = new Headers();
 
-	constructor(walletServiceURL?: string) {
-		this.walletServiceBaseURL = walletServiceURL || DefaultWalletServiceBaseURL
+	constructor(walletServiceURL?: string, walletServiceToken?: string) {
+		this.walletServiceBaseURL = walletServiceURL || DefaultWalletServiceBaseURL;
+		this.walletServiceToken = walletServiceToken;
+		if (this.walletServiceToken) {
+			console.debug("WalletService instantiated with token");
+			this.headers.append("Authorization", "Bearer " + walletServiceToken);
+		}
+	}
+
+	private async get(url: string, headers?: Headers): Promise<Response> {
+		const response: Response = await fetch(url, {
+			headers: headers || this.headers,
+		});
+		return response;
 	}
 
 	async getEvmAccountByDid(did: string): Promise<string> {
-		const response: Response = await fetch(this.walletServiceBaseURL + "/identities/" + did);
+		const url = this.walletServiceBaseURL + "/identities/" + did;
+		console.debug("making request to " + url);
+
+		const response = await this.get(url);
 		const userOverview: WalletUser = await response.json();
-
-		console.log(userOverview);
-
 		return userOverview.account;
 	}
 
 
 	async getAttributesByDid(did: string): Promise<IdentityAttribute[]> {
-		const response: Response = await fetch(this.walletServiceBaseURL + "/identities/" + did + "/attributes");
+		const url = this.walletServiceBaseURL + "/identities/" + did + "/attributes";
+		console.debug("making request to " + url);
+
+		const response = await this.get(url);
 		const attributes: IdentityAttribute[] = await response.json();
 		return attributes
 	}
