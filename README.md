@@ -22,7 +22,7 @@ cd test
 //IOTA_WASP_CHAIN="tst1pq6hayf.....6pw6mcvre74jzhu4qde"
 //IOTA_WASP_CHAIN_ID="1075"
 //IOTA_WASP_URL="http://localhost"
-node test-iota.js
+ts-node test-iota.js
 ```
 
 ## Build for web

@@ -1,7 +1,3 @@
-// so we need the http client to make a request to the wallet service
-// additionally the wallet service probably is protected by the JWT token so this needs to be passed as well
-
-
 export const DefaultWalletServiceBaseURL = "http://localhost:8081"
 
 export interface WalletUser {

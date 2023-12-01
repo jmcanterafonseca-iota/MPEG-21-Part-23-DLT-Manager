@@ -1,11 +1,11 @@
 const {
   generateSmartContractSpecification,
   obtainSmartContractSpecification,
-  MockStorage,
-  OffChainStorage,
   EthereumDeployer,
   EthereumParser,
 } = require('../src');
+const { OffChainStorage } = require('mco-parser');
+
 const HDWalletProvider = require('@truffle/hdwallet-provider');
 const fs = require('fs');
 
