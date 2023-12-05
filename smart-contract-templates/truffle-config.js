@@ -24,6 +24,8 @@ const url = process.env.IOTA_WASP_URL;
 const chain = process.env.IOTA_WASP_CHAIN;
 const providerOrUrl = `${url}/wasp/api/v1/chains/${chain}/evm`;
 
+const endpoint = process.env.IOTA_EVM_ENDPOINT_URL;
+
 const HDWalletProvider = require('@truffle/hdwallet-provider');
 
 // Generic provider for IOTA Wasp
@@ -39,7 +41,7 @@ const iotaStableEBSIProvider = new HDWalletProvider({
   mnemonic: {
     phrase
   },
-  providerOrUrl: 'https://json-rpc.evm.stable.iota-ec.net',
+  providerOrUrl: endpoint,
 });
 
 

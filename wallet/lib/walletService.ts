@@ -39,12 +39,18 @@ export class WalletService {
 	}
 
 	async getEvmAccountByDid(did: string): Promise<string> {
-		const url = this.walletServiceBaseURL + "/identities/" + did;
-		console.debug("making request to " + url);
+		const attributes = await this.getAttributesByDid(did);
 
-		const response = await this.get(url);
-		const userOverview: WalletUser = await response.json();
-		return userOverview.account;
+		for (const attribute of attributes) {
+			if (attribute.attributeId === "http://ebsi.iota.org/attributes/evmAccount") {
+				const now = Math.floor(Date.now() / 1000);
+				if (attribute.validUntil > now) {
+					return attribute.attributeValue;
+				}
+			}
+		}
+
+		throw new Error(`No EVM Account found for DID: ${did}`);
 	}
 
 
