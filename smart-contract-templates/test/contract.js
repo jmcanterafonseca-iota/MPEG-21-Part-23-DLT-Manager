@@ -61,6 +61,6 @@ contract('Contract', (accounts) => {
 
     console.log("Account to be paid", accounts[3].toString());
 
-    await cont.payTo(accounts[3].toString(), new web3.utils.BN(2), { from: owner, gas: '6000000', value: '123456000000000000' });
+    await cont.payTo(accounts[3].toString(), new web3.utils.BN('123456000000000000'), { from: owner, gas: '6000000', value: '123456000000000000' });
   });
 });
