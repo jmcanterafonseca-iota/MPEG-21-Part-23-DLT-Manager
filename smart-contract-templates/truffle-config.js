@@ -22,11 +22,25 @@ require('dotenv').config();
 const phrase = process.env.IOTA_WASP_MNEMONIC;
 const url = process.env.IOTA_WASP_URL;
 const chain = process.env.IOTA_WASP_CHAIN;
-const providerOrUrl = `${url}/wasp/api/v1/chains/${chain}/evm`;
 
 const endpoint = process.env.IOTA_EVM_ENDPOINT_URL;
+const providerOrUrl = process.env.IOTA_EVM_ENDPOINT_URL;
 
 const HDWalletProvider = require('@truffle/hdwallet-provider');
+
+const Web3 = require("web3");
+
+const fs = require("fs");
+let privateKeys = [];
+try {
+  const content = fs.readFileSync("./private-keys.json");
+  privateKeys = JSON.parse(content);
+}
+catch {
+  console.warn("No private keys supplied. Using mnemonic phrase");
+}
+
+console.log(privateKeys);
 
 // Generic provider for IOTA Wasp
 const iotaProvider = new HDWalletProvider({
@@ -37,13 +51,41 @@ const iotaProvider = new HDWalletProvider({
 });
 
 // Provider for stable EBSI network
-const iotaStableEBSIProvider = new HDWalletProvider({
-  mnemonic: {
-    phrase
-  },
-  providerOrUrl: endpoint,
-});
+let iotaStableEBSIProvider;
+if (privateKeys.length === 0) {
+  iotaStableEBSIProvider = new HDWalletProvider({
+    providerOrUrl: endpoint,
+    numberOfAddresses: 30,
+    mnemonic : { phrase }
+  });
+} else {
+  iotaStableEBSIProvider = new HDWalletProvider({
+    providerOrUrl: endpoint,
+    numberOfAddresses: 30,
+    privateKeys
+  });
+}
 
+let shimmerEvmProvider;
+if (privateKeys.length === 0) {
+  shimmerEvmProvider = new HDWalletProvider({
+    providerOrUrl: process.env.SHIMMER_EVM,
+    mnemonic : { phrase }
+  });
+} else {
+  shimmerEvmProvider = new HDWalletProvider({
+    providerOrUrl: process.env.SHIMMER_EVM,
+    privateKeys
+  });
+}
+
+const addresses = iotaStableEBSIProvider.getAddresses();
+console.log("Addresses", addresses);
+
+const web3Provider = new Web3(process.env.IOTA_EVM_ENDPOINT_URL);
+for (const addr of addresses) {
+  web3Provider.eth.getBalance(web3Provider.utils.toChecksumAddress(addr)).then((balance) => console.log(`${addr} --> ${balance}`));
+}
 
 module.exports = {
   /**
@@ -79,6 +121,12 @@ module.exports = {
       provider: iotaStableEBSIProvider,
       network_id: '*',
     },
+
+    shimmer: {
+      provider: shimmerEvmProvider,
+      network_id: '*',
+      networkCheckTimeout: 20000
+    }
   },
 
   // Set default mocha options here, use special reporters etc.

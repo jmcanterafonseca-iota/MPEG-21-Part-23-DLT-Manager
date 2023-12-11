@@ -50,7 +50,9 @@ export class WalletService {
 			}
 		}
 
-		throw new Error(`No EVM Account found for DID: ${did}`);
+		console.warn(`No EVM Account found for DID: ${did}`);
+		return "";
+		// throw new Error(`No EVM Account found for DID: ${did}`);
 	}
 
 
@@ -59,12 +61,11 @@ export class WalletService {
 		console.debug("making request to " + url);
 
 		const response = await this.get(url);
-		const attributes: IdentityAttribute[] = await response.json();
-		return attributes
+		if (response.status === 200) {
+			const attributes: IdentityAttribute[] = await response.json();
+			return attributes;
+		}
+
+		return [];
 	}
-
 }
-
-
-
-

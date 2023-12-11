@@ -58,5 +58,9 @@ contract('Contract', (accounts) => {
     //const a = await cont.getDeonticExpressions();
     const b = await cont.getIncomePercentagesBy(accounts[2]);
     console.log(b);
+
+    console.log("Account to be paid", accounts[3].toString());
+
+    await cont.payTo(accounts[3].toString(), new web3.utils.BN(2), { from: owner, gas: '6000000', value: '123456000000000000' });
   });
 });

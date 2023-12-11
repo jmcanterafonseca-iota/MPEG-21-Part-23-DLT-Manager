@@ -15,13 +15,18 @@ const fs = require('fs');
 require('dotenv').config();
 
 const phrase = process.env.IOTA_WASP_MNEMONIC;
+
 const providerUrl = process.env.IOTA_EVM_ENDPOINT_URL;
-const chainId = process.env.IOTA_WASP_CHAIN
+
+console.log(providerUrl);
+
+
+const chainId = process.env.IOTA_WASP_CHAIN_ID;
 
 const ipfsGatewayUrl = process.env.IPFS_GATEWAY_URL;
 
 if (process.argv.length < 3) {
-  console.error("Please provide contract's semantic description (.ttl) and MCO representation (.json)");
+  console.error("Please provide contract's MCO representation (.json)");
   process.exit(-1);
 }
 
@@ -38,7 +43,7 @@ const deploy = async (smartContractSpecification, ipfs) => {
     mnemonic: {
       phrase,
     },
-    providerUrl,
+    providerOrUrl: providerUrl,
   });
   const deployer = new EthereumDeployer(provider, ipfs, chainId);
 
@@ -60,7 +65,7 @@ const parse = async (address, ipfs) => {
     mnemonic: {
       phrase,
     },
-    providerUrl,
+    providerOrUrl: providerUrl,
   });
   const pars = new EthereumParser(
     provider,
