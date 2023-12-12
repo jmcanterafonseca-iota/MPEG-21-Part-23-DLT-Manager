@@ -5,6 +5,8 @@ import "./NFToken.sol";
 import "./EnumerableMapAddressToUint.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
 //import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 contract Contract {
@@ -32,6 +34,15 @@ contract Contract {
     // Contract content HASH
     bytes public _contentHash;
 
+    IERC20 public _erc20Token;
+
+    address private owner;
+
+     modifier onlyOwner {
+        require(msg.sender == owner, "Only the contract owner can call this fucntion");
+        _;
+    }
+
     constructor(
         bytes memory identifier,
         address[] memory parties,
@@ -45,7 +56,10 @@ contract Contract {
         string memory contentUri,
         bytes memory contentHash
     ) {
+        owner = msg.sender;
+
         _identifier = identifier;
+
         for (uint256 i = 0; i < parties.length; i++) {
             _parties.add(parties[i]);
         }
@@ -71,19 +85,30 @@ contract Contract {
         _contentHash = contentHash;
     }
 
-    function payTo(address payable beneficiary, uint256 amount) public payable {
+    function setERC20Token(address addr) public onlyOwner {
+         _erc20Token = IERC20(addr);
+    }
+ 
+    function payTo(address sender, address payable beneficiary, uint256 amount) public payable {
         uint256 finalAmount = amount;
+
+        if (_erc20Token.balanceOf(sender) < amount) {
+            revert("Not enough funds");
+        }
+
         uint256 l = _incomePercentages[beneficiary].length();
+
         if (l != 0) {
             for (uint256 i = 0; i < l; i++) {
                 (address incomeBeneficiary, uint256 incomePercentage) =
                     _incomePercentages[beneficiary].at(i);
-                uint256 subAmount = amount.mul(incomePercentage).div(100);
-                payTo(payable(incomeBeneficiary), subAmount);
+                uint256 subAmount = amount.mul(incomePercentage).div(10000);
+                _erc20Token.transferFrom(sender, incomeBeneficiary, subAmount);
                 finalAmount = finalAmount.sub(subAmount);
             }
         }
-        beneficiary.transfer(finalAmount);
+        
+        _erc20Token.transferFrom(sender, beneficiary, finalAmount);
     }
 
     function getParties() public view returns (address[] memory) {

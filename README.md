@@ -39,7 +39,7 @@ npx truffle migrate --reset --network stable
 
 ### Deploy a Smart Contract and NFTs resulting from Media Contractual Object
 
-Ensure you have defined the proper `.env`, including the Mnemonic that will lead to the address and private key that will fund the contract and NFT creation. Such an address must hold enough tokens to fund the gas fees. Also it is needed the endpoint of the WASP Node (JSON-RPC) and the chain ID (network ID). Then, the IPFS gateway URL where to store the NFT metadata of the permissions, obligations and related work arts. And finally, the Wallet service and Wallet service token (if needed) where EVM the addresses of the different stakeholders will be obtained.
+Ensure you have defined the proper `.env`, including the Mnemonic that will lead to the address and private key that will fund the contract and NFT creation. Alternatively there is the possibility of using the file [private-keys.json](./private-keys-json). The number #0 address must hold enough tokens to fund the gas fees. Also it is needed the endpoint of the WASP Node (JSON-RPC) and the chain ID (network ID). Then, the IPFS gateway URL where to store the NFT metadata of the permissions, obligations and related tokens that represent work arts. And finally, the Wallet service and Wallet service token (if needed) where EVM the addresses of the different stakeholders will be obtained.
 
 ```sh
 IOTA_WASP_MNEMONIC="angle ...... meadow cereal"
@@ -53,7 +53,7 @@ WALLET_SERVICE_TOKEN="eyJhbG..."
 ```
 
 ```sh
-npx ts-node ./test/deploy-contract.js <path_to_the_MediaContractual_Object.json> 
+npx ts-node ./test/deploy-contract.js <path_to_the_MediaContractual_Object.json> ./private-keys.json
 ```
 
 ## Other tests (from the original MPEG project)

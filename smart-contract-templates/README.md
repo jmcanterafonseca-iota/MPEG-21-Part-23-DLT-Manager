@@ -15,7 +15,17 @@ Afterwards execute
 npx truffle migrate --reset --network stable
 ```
 
-## Other tests
+`--reset` can be optional in incremental migrations and only needed to ensure everything is redeployed regardless current state.
+
+At the moment the mnemonic is no longer needed if a `private-keys.json` file exists at the parent folder. 
+
+## Functional testing execution
+
+```sh
+npx truffle test --network stable
+```
+
+## Other tests (from the original MPEG project)
 
 Create a `.env` file containing these informations:
 

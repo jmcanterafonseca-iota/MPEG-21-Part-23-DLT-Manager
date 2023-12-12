@@ -33,7 +33,7 @@ const Web3 = require("web3");
 const fs = require("fs");
 let privateKeys = [];
 try {
-  const content = fs.readFileSync("./private-keys.json");
+  const content = fs.readFileSync("../private-keys.json");
   privateKeys = JSON.parse(content);
 }
 catch {
@@ -82,10 +82,12 @@ if (privateKeys.length === 0) {
 const addresses = iotaStableEBSIProvider.getAddresses();
 console.log("Addresses", addresses);
 
+/*
 const web3Provider = new Web3(process.env.IOTA_EVM_ENDPOINT_URL);
 for (const addr of addresses) {
   web3Provider.eth.getBalance(web3Provider.utils.toChecksumAddress(addr)).then((balance) => console.log(`${addr} --> ${balance}`));
 }
+*/
 
 module.exports = {
   /**
@@ -120,6 +122,7 @@ module.exports = {
     stable: {
       provider: iotaStableEBSIProvider,
       network_id: '*',
+      networkCheckTimeout: 40000
     },
 
     shimmer: {
