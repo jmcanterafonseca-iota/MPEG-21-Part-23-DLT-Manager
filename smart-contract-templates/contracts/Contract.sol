@@ -89,7 +89,7 @@ contract Contract {
          _erc20Token = IERC20(addr);
     }
  
-    function payTo(address sender, address payable beneficiary, uint256 amount) public payable {
+    function payTo(address sender, address beneficiary, uint256 amount) public {
         uint256 finalAmount = amount;
 
         if (_erc20Token.balanceOf(sender) < amount) {

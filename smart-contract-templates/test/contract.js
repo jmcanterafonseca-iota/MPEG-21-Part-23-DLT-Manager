@@ -1,5 +1,6 @@
 const mco = require("../../test/example.json");
 const Contract = artifacts.require("Contract.sol");
+const Contract2 = artifacts.require("Contract2.sol");
 const NFToken = artifacts.require("NFToken.sol");
 const ERC20Token = artifacts.require("ERC20Token.sol");
 
@@ -54,7 +55,7 @@ contract("Contract", (accounts) => {
         });
         console.log(res0);
         
-        await cont.setERC20Token(erc20Token.address)
+        await cont.setERC20Token(erc20Token.address);
 
         //const a = await cont.getDeonticExpressions();
         const b = await cont.getIncomePercentagesBy(accounts[3]);
@@ -63,5 +64,21 @@ contract("Contract", (accounts) => {
         console.log("Account to be paid", accounts[3].toString());
 
         await cont.payTo(owner, accounts[3].toString(), new web3.utils.BN("1000"));
+
+        const contract2 = await Contract2.new(
+            web3.utils.asciiToHex("identifier"),
+            partiesAcc,
+            token.address,
+            dlist,
+            olist,
+            contentUri,
+            contentHash,
+            {
+                from: owner,
+                gas: "6000000",
+            }
+        );
+
+        await contract2.payTo(cont.address, owner, accounts[3].toString(), new web3.utils.BN("1000"));
     });
 });
