@@ -79,7 +79,7 @@ const deploy = async (smartContractSpecification, ipfs) => {
 
     const mainAddress = provider.getAddresses()[0];
     // on behalf of the main address the Smart Contract can send tokens
-    await deployer.approveToSendTokens(mainAddress, 10000);
+    await deployer.approveToSendTokens(mainAddress, new Web3.utils.BN("900000000000000000000"));
 
     if (optionalAddrPresentIndex !== -1) {
         const addressToPay = process.argv[optionalAddrPresentIndex];
@@ -113,6 +113,8 @@ const main = async () => {
     res = await parse(address, ipfs);
     await ipfs.stop();
     console.log(res);
+
+    console.log("Smart Contract address: ", address);
 };
 
 main();

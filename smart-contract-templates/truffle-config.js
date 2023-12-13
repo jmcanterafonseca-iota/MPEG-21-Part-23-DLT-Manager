@@ -28,8 +28,6 @@ const providerOrUrl = process.env.IOTA_EVM_ENDPOINT_URL;
 
 const HDWalletProvider = require('@truffle/hdwallet-provider');
 
-const Web3 = require("web3");
-
 const fs = require("fs");
 let privateKeys = [];
 try {
@@ -39,8 +37,6 @@ try {
 catch {
   console.warn("No private keys supplied. Using mnemonic phrase");
 }
-
-console.log(privateKeys);
 
 // Generic provider for IOTA Wasp
 const iotaProvider = new HDWalletProvider({
@@ -82,11 +78,14 @@ if (privateKeys.length === 0) {
 const addresses = iotaStableEBSIProvider.getAddresses();
 console.log("Addresses", addresses);
 
-/*
+/* uncomment this to obtain the balance of the addresses
+
+const Web3 = require("web3");
 const web3Provider = new Web3(process.env.IOTA_EVM_ENDPOINT_URL);
 for (const addr of addresses) {
   web3Provider.eth.getBalance(web3Provider.utils.toChecksumAddress(addr)).then((balance) => console.log(`${addr} --> ${balance}`));
 }
+
 */
 
 module.exports = {
