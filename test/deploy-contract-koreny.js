@@ -3,6 +3,7 @@ const { OffChainStorage } = require("mco-parser");
 
 const HDWalletProvider = require("@truffle/hdwallet-provider");
 const fs = require("fs");
+const Web3 = require("web3");
 
 // Create a `.env` file containing these informations:
 //IOTA_WASP_MNEMONIC="angle ...... meadow cereal"
@@ -13,14 +14,13 @@ const phrase = process.env.IOTA_WASP_MNEMONIC;
 
 const providerUrl = process.env.IOTA_EVM_ENDPOINT_URL;
 
-console.log(providerUrl);
-
 const chainId = process.env.IOTA_WASP_CHAIN_ID;
-
 const ipfsGatewayUrl = process.env.IPFS_GATEWAY_URL;
 
 if (process.argv.length < 3) {
-    console.error("Please provide contract's MCO representation (.json)");
+    console.error(
+        "Parameters: 1. contract's MCO representation (.json).(Mandatory). 2. Private keys (.json).(optional) 3. Test Address (0x..) to pay.(optional)"
+    );
     process.exit(-1);
 }
 
@@ -33,13 +33,18 @@ const generate = () => {
 const walletService = new WalletService(process.env.WALLET_SERVICE_URL, process.env.WALLET_SERVICE_TOKEN);
 
 let privateKeys = [];
-try {
-    const content = fs.readFileSync(process.argv[3]);
-    privateKeys = JSON.parse(content);
-} catch {
-    console.warn("No private keys supplied. Using mnemonic phrase");
-}
+let optionalAddrPresentIndex = -1;
 
+if (process.argv[3]) {
+    try {
+        const content = fs.readFileSync(process.argv[3]);
+        privateKeys = JSON.parse(content);
+        optionalAddrPresentIndex = 4;
+    } catch {
+        console.warn("No private keys supplied. Using mnemonic phrase");
+        optionalAddrPresentIndex = 3;
+    }
+}
 
 let provider;
 
@@ -76,9 +81,17 @@ const deploy = async (smartContractSpecification, ipfs) => {
     // on behalf of the main address the Smart Contract can send tokens
     await deployer.approveToSendTokens(mainAddress, 10000);
 
-    if (false) {
-        // sender, destination, amount
-        await deployer.payTo(mainAddress, "0xa1d996fCD1ed961F8C1e2cad1af1D00722C73F8E", 1000);
+    if (optionalAddrPresentIndex !== -1) {
+        const addressToPay = process.argv[optionalAddrPresentIndex];
+        if (addressToPay) {
+            const web3Provider = new Web3(providerUrl);
+            if (web3Provider.utils.isAddress(addressToPay)) {
+                // sender, destination, amount
+                const amount = 1000;
+                console.log("Sending %d to %s", amount, addressToPay);
+                await deployer.payTo(mainAddress, addressToPay, 1000);
+            }
+        }
     }
 
     provider.engine.stop();
