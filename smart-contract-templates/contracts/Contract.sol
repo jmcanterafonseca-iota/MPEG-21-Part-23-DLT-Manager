@@ -7,8 +7,6 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-//import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
-
 contract Contract {
     using SafeMath for uint256;
     using EnumerableSet for EnumerableSet.AddressSet;
@@ -38,8 +36,18 @@ contract Contract {
 
     address private owner;
 
-     modifier onlyOwner {
-        require(msg.sender == owner, "Only the contract owner can call this fucntion");
+    event IPRPaymentDone(
+        address sender,
+        string onBehalfOf,
+        address beneficiary,
+        uint256 amount
+    );
+
+    modifier onlyOwner() {
+        require(
+            msg.sender == owner,
+            "Only the contract owner can call this fucntion"
+        );
         _;
     }
 
@@ -74,8 +82,8 @@ contract Contract {
             _contractRelations.set(relatedContracts[i], relations[i]);
         }
         for (uint256 i = 0; i < incomePercentages.length; ) {
-            EnumerableMap.AddressToUintMap storage incomeMap =
-                _incomePercentages[incomeBeneficiaries[i]];
+            EnumerableMap.AddressToUintMap
+                storage incomeMap = _incomePercentages[incomeBeneficiaries[i]];
             uint256 shares = incomePercentages[i++];
             for (uint256 j = 0; j < shares; j++) {
                 incomeMap.set(incomeBeneficiaries[i], incomePercentages[i++]);
@@ -86,10 +94,15 @@ contract Contract {
     }
 
     function setERC20Token(address addr) public onlyOwner {
-         _erc20Token = IERC20(addr);
+        _erc20Token = IERC20(addr);
     }
- 
-    function payTo(address sender, address beneficiary, uint256 amount) public {
+
+    function payTo(
+        address sender,
+        address beneficiary,
+        uint256 amount,
+        string memory onBehalfOf
+    ) public {
         uint256 finalAmount = amount;
 
         if (_erc20Token.balanceOf(sender) < amount) {
@@ -100,15 +113,25 @@ contract Contract {
 
         if (l != 0) {
             for (uint256 i = 0; i < l; i++) {
-                (address incomeBeneficiary, uint256 incomePercentage) =
-                    _incomePercentages[beneficiary].at(i);
+                (
+                    address incomeBeneficiary,
+                    uint256 incomePercentage
+                ) = _incomePercentages[beneficiary].at(i);
                 uint256 subAmount = amount.mul(incomePercentage).div(10000);
                 _erc20Token.transferFrom(sender, incomeBeneficiary, subAmount);
                 finalAmount = finalAmount.sub(subAmount);
             }
+        } else {
+            revert("Wrong beneficiary");
         }
-        
+
         _erc20Token.transferFrom(sender, beneficiary, finalAmount);
+
+        emit IPRPaymentDone(sender, onBehalfOf, beneficiary, amount);
+    }
+
+    function payTo(address sender, address beneficiary, uint256 amount) public {
+        return this.payTo(sender, beneficiary, amount, "");
     }
 
     function getParties() public view returns (address[] memory) {
@@ -146,11 +169,9 @@ contract Contract {
         return _contractRelations.getAll();
     }
 
-    function getIncomePercentagesBy(address sharer)
-        public
-        view
-        returns (address[] memory, uint256[] memory)
-    {
+    function getIncomePercentagesBy(
+        address sharer
+    ) public view returns (address[] memory, uint256[] memory) {
         return _incomePercentages[sharer].getAll();
     }
 }

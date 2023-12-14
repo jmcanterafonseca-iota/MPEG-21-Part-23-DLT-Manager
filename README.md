@@ -67,7 +67,7 @@ WALLET_SERVICE_TOKEN="eyJhbG..."
 ```
 
 ```sh
-npx ts-node ./test/deploy-contract-koreny.js <path_to_the_MediaContractual_Object.json> ./private-keys.json <test_address_to_pay>
+ MCO_JSON_FILE='<mco_def_file.json>' PRIVATE_KEYS_FILE='<private_keys_file.json>' TEST_ADDR='<0x1234...>' CONTRACT_TEMPLATE='cascade|default' deploy-contract-koreny npx ts-node ./test/deploy-contract-koreny.js 
 ```
 
 The private keys file is optional and the test address to pay as well. If the latter is present then a payment will be done to that address through the `payTo` method of the Smart Contract for Media deployed using the funds of the deployer of the Smart Contract.

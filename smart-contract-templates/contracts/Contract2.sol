@@ -13,8 +13,8 @@ contract Contract2 {
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.UintSet;
     using EnumerableMap for EnumerableMap.AddressToUintMap;
-    
-     // Contract unique identifier
+
+    // Contract unique identifier
     bytes private _identifier;
     // Contract parties address
     EnumerableSet.AddressSet _parties;
@@ -26,10 +26,17 @@ contract Contract2 {
     // Contract objects token id
     EnumerableSet.UintSet _objects;
 
-     // Contract content URI (from Turtle)
+    // Contract content URI (from Turtle)
     string public _contentUri;
     // Contract content HASH
     bytes public _contentHash;
+
+    event IPRPaymentDone(
+        address sender,
+        string onBehalfOf,
+        address beneficiary,
+        uint256 amount
+    );
 
     constructor(
         bytes memory identifier,
@@ -40,7 +47,6 @@ contract Contract2 {
         string memory contentUri,
         bytes memory contentHash
     ) {
-
         _identifier = identifier;
 
         for (uint256 i = 0; i < parties.length; i++) {
@@ -57,10 +63,27 @@ contract Contract2 {
         _contentHash = contentHash;
     }
 
-    function payTo(address previousContract, address sender, address beneficiary, uint256 amount) public {
-         Contract previousC = Contract(previousContract);
+    function payTo(
+        address previousContract,
+        address sender,
+        address beneficiary,
+        uint256 amount,
+        string memory onBehalfOf
+    ) public {
+        Contract previousC = Contract(previousContract);
 
-         previousC.payTo(sender,beneficiary,amount);
+        previousC.payTo(sender, beneficiary, amount, "");
+
+        emit IPRPaymentDone(sender, onBehalfOf, beneficiary, amount);
+    }
+
+    function payTo(
+        address previousContract,
+        address sender,
+        address beneficiary,
+        uint256 amount
+    ) public {
+        return payTo(previousContract, sender, beneficiary, amount, "");
     }
 
     function getParties() public view returns (address[] memory) {
