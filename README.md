@@ -73,6 +73,8 @@ NFT_SMART_CONTRACT_ADDR="0x...."
 ERC20_TOKEN_SMART_CONTRACT_ADDR="0x...."
 ```
 
+Finally the following instruction on the command line has to executed.
+
 ```sh
  MCO_JSON_FILE='<mco_def_file.json>' PRIVATE_KEYS_FILE='<private_keys_file.json>' TEST_ADDR='<0x1234...>' CONTRACT_TEMPLATE='cascade|default' deploy-contract-koreny npx ts-node ./test/deploy-contract-koreny.js 
 ```
