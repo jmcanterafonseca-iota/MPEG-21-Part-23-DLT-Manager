@@ -66,6 +66,13 @@ WALLET_SERVICE_URL="https://wallet-api.stable.iota-ec.net"
 WALLET_SERVICE_TOKEN="eyJhbG..."
 ```
 
+Optionally it can be provided the address of an existing NFT Smart Contract and/or an existing ERC20 token contract to be used. If these environment variables are not defined then these address will be taken from the last migration Truffle process made on the corresponding network.
+
+```sh
+NFT_SMART_CONTRACT_ADDR="0x...."
+ERC20_TOKEN_SMART_CONTRACT_ADDR="0x...."
+```
+
 ```sh
  MCO_JSON_FILE='<mco_def_file.json>' PRIVATE_KEYS_FILE='<private_keys_file.json>' TEST_ADDR='<0x1234...>' CONTRACT_TEMPLATE='cascade|default' deploy-contract-koreny npx ts-node ./test/deploy-contract-koreny.js 
 ```
