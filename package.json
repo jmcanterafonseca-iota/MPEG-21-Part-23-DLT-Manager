@@ -25,7 +25,8 @@
     "multiformats": "^12.0.1",
     "web3": "^1.3.4",
     "express": "^4.18.2",
-    "tslog": "^4.9.2"
+    "tslog": "^4.9.2",
+    "ws": "^8.15.1"
   },
   "devDependencies": {
     "@truffle/hdwallet-provider": "2.1.12",

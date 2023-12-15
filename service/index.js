@@ -9,14 +9,23 @@ const appLogger = new logger.Logger({
     minLevel: 1,
 });
 
-const fs = require("fs");
 
-const { spawn } = require("child_process");
+const ws = require("ws");
+const wsServer = new ws.Server({ noServer: true });
+
+// Web socket connections
+const connections = {};
 
 const { PORT } = process.env;
+const APP_VERSION = "0.1.0";
 
-app.get("/", (req, res) => {
-    res.send("Hello World!");
+const { generate } = require("./generation.js");
+
+app.get("/health", (req, res) => {
+    res.json({
+        version: APP_VERSION,
+        healthy: true,
+    });
 });
 
 app.post("/generate-contract", (req, res) => {
@@ -24,7 +33,7 @@ app.post("/generate-contract", (req, res) => {
     const data = req.body;
 
     const options = data.options;
-    if (!options || (!data.turtle && !data.mediaContractualObjects)) {
+    if (!options || (!data.turtle?.value && !data.mediaContractualObjects) || !options.requestId) {
         res.sendStatus(400);
         return;
     }
@@ -32,58 +41,54 @@ app.post("/generate-contract", (req, res) => {
     const requestId = options.requestId;
     const contractTemplate = options.contractTemplate ?? "default";
 
-    setImmediate(() => generate(data, requestId, contractTemplate));
+    const progressConnection = connections[requestId];
+    setImmediate(() => generate(data, requestId, contractTemplate, progressConnection));
 
     res.sendStatus(202);
 });
 
-app.listen(PORT, () => {
+wsServer.on("connection", (ws, req) => {
+    appLogger.debug("New connection:", req.url);
+
+    const pathElements = req.url.split("/");
+    const requestId = pathElements[pathElements.length - 1];
+
+    if (!requestId) {
+        ws.close();
+        appLogger.error("No request Id has been supplied. WS closed");
+        return;
+    } 
+    
+    appLogger.debug("Request Id", requestId, "added to connections");
+
+    connections[requestId] = ws;
+
+    const closeFunction = (e) => {
+      appLogger.debug("Connection closed for", requestId);
+      connections[requestId] = undefined;
+    };
+
+    ws.onclose = closeFunction;
+});
+
+const httpServer = app.listen(PORT, () => {
     appLogger.debug(`Example app listening on port ${PORT}`);
 });
 
-function generate(data, requestId, contractTemplate) {
-    if (data.mediaContractualObjects) {
-        return generateContract(data, requestId, contractTemplate);
-    } else if (data.turtle) {
-        return generateContractFromTurtle(data.turtle.value, requestId, contractTemplate);
-    } else {
-        throw new Error("Turtle nor MCO found on the data payload");
-    }
-}
+httpServer.on("upgrade", (req, socket, head) => {
+    wsServer.handleUpgrade(req, socket, head, (ws) => {
+        appLogger.debug("Websocket connection", req.url);
 
-function generateFromTurtle(turtleSpec, requestId, contractTemplate) {
-  app.Logger.debug("Generation from Turtle file");
-
-  // First of all we need to take the Turtle and transform to MCO
-  const path = `.contracts/turtle/${requestId}-${Date.now()}.ttl`;
-  fs.writeFileSync(path, turtleSpec);
-
-  const mcoGeneratorCommand = `npx `;
-}
-
-function generateContract(mco, requestId, contractTemplate) {
-    appLogger.debug(`Contract to be generated: '${mco.mediaContractualObjects.contracts[0].class}'`);
-    appLogger.debug(`Contract template to use: '${contractTemplate}'`);
-    appLogger.debug(`Request Id: '${requestId}'`);
-
-    const path = `.contracts/mco/${requestId}-${Date.now()}.json`;
-
-    fs.writeFileSync(path, JSON.stringify(mco));
-
-    const generatorCommand = `MCO_JSON_FILE="service/${path}" CONTRACT_TEMPLATE=${contractTemplate} PRIVATE_KEYS_FILE="./private-keys.json" npx ts-node ./test/deploy-contract-koreny`;
-
-    appLogger.debug(generatorCommand);
-
-    const ls = spawn("sh", ["-c", generatorCommand], { cwd: ".." });
-
-    ls.stdout.on("data", (data) => {
-        console.log(`stdout: ${data}`);
+        if (req.url.startsWith("/progress/")) {
+            wsServer.emit("connection", ws, req);
+        } else {
+            appLogger.error(`Websocket connection not allowed to '${req.url}'`);
+            socket.destroy();
+        }
     });
+});
 
-    ls.stderr.on("data", (data) => {
-        console.error(`stderr: ${data}`);
-    });
-}
+appLogger.debug(`Web socket connection has been set up`);
 
 process.on("uncaughtException", (e) => {
     appLogger.error(`Process error: ${e}`);
