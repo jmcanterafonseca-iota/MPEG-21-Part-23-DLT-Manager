@@ -93,7 +93,7 @@ wsServer.on("connection", (ws, req) => {
 });
 
 const httpServer = app.listen(PORT_SERVICE_GENERATION ?? 3000, () => {
-    appLogger.debug(`Example app listening on port ${PORT_SERVICE_GENERATION ?? 3000}`);
+    appLogger.debug(`IPR Contract Generator app listening on port ${PORT_SERVICE_GENERATION ?? 3000}`);
 });
 
 httpServer.on("upgrade", (req, socket, head) => {
