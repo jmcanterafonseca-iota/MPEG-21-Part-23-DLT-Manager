@@ -1,0 +1,26 @@
+version: "3"
+
+networks:
+  n1:
+    external:
+      name: data-center
+
+services:
+  ipr-contract-generator:
+    hostname: ipr-contract-generator
+    networks:
+      - n1
+    env_file:
+     - ./config.env
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: iota-ebsi/ipr-contract-generator:0.1
+    restart: unless-stopped
+    container_name: ipr-contract-generator
+    expose:
+      - 3000
+    ports:
+      - "0.0.0.0:5112:3000"
+    volumes: 
+      - ./.contracts:/opt/generator/MPEG-21-Part-23-DLT-Manager/service/.contracts

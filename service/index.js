@@ -9,6 +9,27 @@ const appLogger = new logger.Logger({
     minLevel: 1,
 });
 
+const BASE_DIR = ".contracts";
+
+const fs = require("fs");
+const path = require("path");
+
+if (!fs.existsSync(BASE_DIR)) {
+    appLogger.error(`'${BASE_DIR}' folder does not exist`);
+    process.exit(-1);
+}
+
+const MCO_FOLDER = "mco";
+if (!fs.existsSync(path.join(BASE_DIR, MCO_FOLDER))) {
+    appLogger.debug(`Creating ${MCO_FOLDER} folder inside ${BASE_DIR}`);
+    fs.mkdirSync(path.join(BASE_DIR, MCO_FOLDER));
+}
+
+const TURTLE_FOLDER = "turtle";
+if (!fs.existsSync(path.join(BASE_DIR, TURTLE_FOLDER))) {
+    appLogger.debug(`Creating '${TURTLE_FOLDER}' folder inside ${BASE_DIR}`);
+    fs.mkdirSync(path.join(BASE_DIR, TURTLE_FOLDER));
+}
 
 const ws = require("ws");
 const wsServer = new ws.Server({ noServer: true });
@@ -16,7 +37,7 @@ const wsServer = new ws.Server({ noServer: true });
 // Web socket connections
 const connections = {};
 
-const { PORT } = process.env;
+const { PORT_SERVICE_GENERATION } = process.env;
 const APP_VERSION = "0.1.0";
 
 const { generate } = require("./generation.js");
@@ -71,8 +92,8 @@ wsServer.on("connection", (ws, req) => {
     ws.onclose = closeFunction;
 });
 
-const httpServer = app.listen(PORT, () => {
-    appLogger.debug(`Example app listening on port ${PORT}`);
+const httpServer = app.listen(PORT_SERVICE_GENERATION ?? 3000, () => {
+    appLogger.debug(`Example app listening on port ${PORT_SERVICE_GENERATION ?? 3000}`);
 });
 
 httpServer.on("upgrade", (req, socket, head) => {
