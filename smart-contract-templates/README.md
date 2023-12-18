@@ -17,7 +17,7 @@ npx truffle migrate --reset --network stable
 
 `--reset` can be optional in incremental migrations and only needed to ensure everything is redeployed regardless current state.
 
-At the moment the mnemonic is no longer needed if a `private-keys.json` file exists at the parent folder. 
+At the moment the mnemonic is no longer needed if a `private-keys.json` file exists at the parent folder. An example, with address already funded, `private-keys.json` file can be found [here](https://github.com/iotaledger/ebsi-stardust-components/blob/master/demos/ipr-use-case/european-ghosts/secrets/private-keys.json).
 
 ## Functional testing execution
 
