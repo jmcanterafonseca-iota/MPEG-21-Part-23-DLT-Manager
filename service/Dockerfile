@@ -4,7 +4,7 @@ RUN apk add git
 
 WORKDIR /opt/generator
 RUN git clone https://github.com/iotaledger/MPEG-21-Part-23-MCO-Parser
-RUN git clone -b service_generation https://github.com/jmcanterafonseca-iota/MPEG-21-Part-23-DLT-Manager
+RUN git clone https://github.com/iotaledger/MPEG-21-Part-23-DLT-Manager
 
 WORKDIR /opt/generator/MPEG-21-Part-23-MCO-Parser
 RUN npm install
