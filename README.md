@@ -27,7 +27,7 @@ npm install
 
 ## Koreny dataset generation (IOTA-EBSI stable network)
 
-The [private keys](./private-keys.json) present in the repository are used mostly for testing purposes at the [smart-contract-templates](./smart-contract-templates/) with Truffle. They can also be used for testing just deployed Smart Contracts to test they behave correctly. However, the Koreny dataset has its own set of EVM addresses used by the different stakeholders. In the [EBSI PCP Stardust](https://github.com/iotaledger/ebsi-stardust-components/tree/master/demos/ipr-use-case/european-ghosts/identity/dataset/claims) repository it can be found the corresponding addresses and private keys. 
+The [private keys](https://github.com/iotaledger/ebsi-stardust-components/tree/master/demos/ipr-use-case/european-ghosts/secrets/private-keys.json) referenced in the repository are used mostly for testing purposes at the [smart-contract-templates](./smart-contract-templates/) with Truffle. They can also be used for testing just deployed Smart Contracts to test they behave correctly. However, the Koreny dataset has its own set of EVM addresses used by the different stakeholders. In the [EBSI PCP Stardust](https://github.com/iotaledger/ebsi-stardust-components/tree/master/demos/ipr-use-case/european-ghosts/identity/dataset/claims) repository it can be found the corresponding addresses and private keys.
 
 ### Preparation : Build and deploy base Smart Contracts
 
@@ -80,6 +80,10 @@ Finally the following instruction on the command line has to executed.
 ```
 
 The private keys file is optional and the test address to pay as well. If the latter is present then a payment will be done to that address through the `payTo` method of the Smart Contract for Media deployed using the funds of the deployer of the Smart Contract.
+
+## Smart Contract Generation Service
+
+Please see [./service](./service).
 
 ## Other tests (from the original MPEG project)
 

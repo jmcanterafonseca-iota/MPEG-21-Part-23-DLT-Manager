@@ -23,7 +23,7 @@ A request that contains an Media Contractual Object represented as JSON together
         "contractTemplate": "cascade"
     },
 
-    "mediaContractualObjects: {
+    "mediaContractualObjects": {
 
     }
 }
@@ -32,7 +32,7 @@ A request that contains an Media Contractual Object represented as JSON together
 * `options.requestId` Indicates the request ID that will be used later to follow the progress. 
 * `options.contractTemplate`: Indicates a template of Smart Contract to be used. By default is the `default` template.
 
-Another alternative is to directly request the transformation of a TTL (Turtle) into a Smart Contract specification that ultimately is deployed. The Turtle content has to be serialized as a valid JSON string under the `turtle.value` member. 
+Another alternative is to directly request the transformation of a TTL (Turtle) into a Smart Contract specification that ultimately is deployed. The Turtle content has to be *serialized as a valid JSON string* under the `turtle.value` member.
 
 ```json
 {
