@@ -2,11 +2,25 @@
 
 This folder contains a simple REST service that allows to generate and deploy Smart Contracts for Media (SCM) and follow the progress of the generation and deployment task. It is intended to be used by the IPR Marketplace Web App.
 
-It depends on the MCO Parser and the DLT Manager projects.
+It depends on the [MCO Parser](https://github.com/iotaledger/MPEG-21-Part-23-MCO-Parser) and the DLT Manager projects (this project).
 
-The services offers the following endpoints.
+The services offers the following [endpoints](#endpoints).
 
-## SCM Generation endpoint
+## Configure the service
+
+See the [environment template](config.env.template). Additionally you may need a set of private keys already funded such as the set [here](https://github.com/iotaledger/ebsi-stardust-components/blob/master/demos/ipr-use-case/european-ghosts/secrets/private-keys.json).
+
+## Start the service
+
+```sh
+node ./index.js
+```
+
+or through [docker compose](./docker-compose.yaml).
+
+## Endpoints
+
+### SCM Generation endpoint
 
 `POST /generate-contract`
 
@@ -49,7 +63,7 @@ Another alternative is to directly request the transformation of a TTL (Turtle) 
 
 After receiving the request and accepting it (`202` HTTP status) the service will asynchronously start a new task to proceed. Such a task may take several minutes.
 
-## SCM generation and deployment progress following through Websocket
+### SCM generation and deployment progress following through Websocket
 
 The progress of the generation and deployment task can be followed through a Web Socket by opening a Web socket connection against the endpoint, before requesting a new SCM generation. The endpoint is:
 
