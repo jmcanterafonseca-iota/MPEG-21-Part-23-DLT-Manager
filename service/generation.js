@@ -109,7 +109,9 @@ function generateFromMcoFile(fileName, requestId, contractTemplate, progressConn
     ps.on("close", (code) => {
         appLogger.debug(`Contract creation process exited with code ${code}`);
         if (progressConnection) {
-            progressConnection.send("<success/>");
+            if (code === 0) {
+                progressConnection.send("<success/>");
+            }
         }
     });
 }
