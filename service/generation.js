@@ -3,21 +3,23 @@ const { spawn } = require("child_process");
 
 const logger = require("tslog");
 const appLogger = new logger.Logger({
-    minLevel: 1,
+    minLevel: process.env.GENERATION_SERVICE_LOG_LEVEL ?? 1,
 });
 
-function generate(data, requestId, contractTemplate, progressConnection) {
+const { getContractFromMCO } = require("mco-parser");
+
+async function generate(data, requestId, contractTemplate, progressConnection) {
     if (data.mediaContractualObjects) {
         return generateContract(data, requestId, contractTemplate, progressConnection);
     } else if (data.turtle?.value) {
-        return generateFromTurtle(data.turtle.value, requestId, contractTemplate, progressConnection);
+        await generateFromTurtle(data.turtle.value, requestId, contractTemplate, progressConnection);
     } else {
         throw new Error("Turtle nor MCO found on the data payload");
     }
 }
 
 // generates and creates and contract from turtle specification
-function generateFromTurtle(turtleSpec, requestId, contractTemplate, progressConnection) {
+async function generateFromTurtle(turtleSpec, requestId, contractTemplate, progressConnection) {
     appLogger.debug("Generation from Turtle file");
     appLogger.debug(`Contract template to use: '${contractTemplate}'`);
     appLogger.debug(`Request Id: '${requestId}'`);
@@ -29,41 +31,37 @@ function generateFromTurtle(turtleSpec, requestId, contractTemplate, progressCon
     fs.writeFileSync(path, turtleSpec);
 
     const outputDir = `service/.contracts/mco`;
-    const mcoParserDir = `../MPEG-21-Part-23-MCO-Parser`;
-
     const mcoFileName = `${baseFile}-mco.json`;
 
-    const generationCommand = `npx ts-node ${mcoParserDir}/test/index.js -c "service/${path}" > ${outputDir}/${mcoFileName}`;
+    const ttl = fs.readFileSync(path, "utf-8");
+    appLogger.debug("Generating MCO from turtle");
 
-    appLogger.debug("From Turtle generation cmd", generationCommand);
+    if (progressConnection) {
+        progressConnection.send("Generating MCO ...");
+    }
 
-    const ps = spawn("sh", ["-c", generationCommand], { cwd: ".." });
+    try {
+        const mco = await getContractFromMCO(ttl);
 
-    ps.stdout.on("data", (data) => {
-        console.log(`stdout: ${data}`);
-        if (progressConnection) {
-            progressConnection.send(`${data}`);
-        }
-    });
+        fs.writeFileSync(path.join(outputDir, mcoFileName), JSON.stringify(mco));
+    } catch (e) {
+        appLogger.error("There was an error generating the MCO objects", e);
 
-    ps.stderr.on("data", (data) => {
-        console.error(`stderr: ${data}`);
-        if (progressConnection) {
-            progressConnection.send("<error>");
-            progressConnection.send(`${data}`);
-            progressConnection.send("</error>");
-        }
-    });
+        progressConnection.send("<error>");
+        progressConnection.send(e);
+        progressConnection.send("</error>");
 
-    ps.on("close", (code) => {
-        appLogger.debug(`MCO generation process exited with code ${code}`);
-        if (code !== 0) {
-            appLogger.error("There was an error generating the MCO objects");
-        } else {
-            appLogger.debug("Now generating the contract and writing it to the Ledger");
-            generateFromMcoFile(mcoFileName, requestId, contractTemplate, progressConnection);
-        }
-    });
+        return -1;
+    }
+
+    if (progressConnection) {
+        progressConnection.send("MCO generated");
+    }
+
+    appLogger.debug("MCO JSON generated and written to file");
+
+    appLogger.debug("Now generating the contract and writing it to the Ledger");
+    generateFromMcoFile(mcoFileName, requestId, contractTemplate, progressConnection);
 }
 
 // Generates a contract from the MCO JSON Object

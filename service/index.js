@@ -64,7 +64,7 @@ app.post("/generate-contract", (req, res) => {
     const contractTemplate = options.contractTemplate ?? "default";
 
     const progressConnection = connections[requestId];
-    setImmediate(() => generate(data, requestId, contractTemplate, progressConnection));
+    setImmediate(async () => await generate(data, requestId, contractTemplate, progressConnection));
 
     res.sendStatus(202);
 });
