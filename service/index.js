@@ -4,9 +4,11 @@ app.use(express.json());
 
 require("dotenv").config();
 
+const { GENERATION_SERVICE_PORT, GENERATION_SERVICE_LOG_LEVEL } = process.env;
+
 const logger = require("tslog");
 const appLogger = new logger.Logger({
-    minLevel: 1,
+    minLevel: parseInt(GENERATION_SERVICE_LOG_LEVEL ?? "1", 10)
 });
 
 const BASE_DIR = ".contracts";
@@ -37,7 +39,6 @@ const wsServer = new ws.Server({ noServer: true });
 // Web socket connections
 const connections = {};
 
-const { PORT_SERVICE_GENERATION } = process.env;
 const APP_VERSION = "0.1.0";
 
 const { generate } = require("./generation.js");
@@ -92,8 +93,8 @@ wsServer.on("connection", (ws, req) => {
     ws.onclose = closeFunction;
 });
 
-const httpServer = app.listen(PORT_SERVICE_GENERATION ?? 3000, () => {
-    appLogger.debug(`IPR Contract Generator app listening on port ${PORT_SERVICE_GENERATION ?? 3000}`);
+const httpServer = app.listen(GENERATION_SERVICE_PORT ?? 3000, () => {
+    appLogger.debug(`IPR Contract Generator app listening on port ${GENERATION_SERVICE_PORT ?? 3000}`);
 });
 
 httpServer.on("upgrade", (req, socket, head) => {
