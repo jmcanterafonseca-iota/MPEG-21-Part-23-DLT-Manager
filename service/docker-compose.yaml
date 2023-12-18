@@ -15,7 +15,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      no_cache: true
+      # no_cache: true
     image: iota-ebsi/ipr-contract-generator:0.1
     restart: unless-stopped
     container_name: ipr-contract-generator
@@ -24,4 +24,5 @@ services:
     ports:
       - "0.0.0.0:5112:3000"
     volumes: 
-      - ./.contracts:/opt/generator/MPEG-21-Part-23-DLT-Manager/service/.contracts
+      - ${PWD}/.contracts:/opt/generator/MPEG-21-Part-23-DLT-Manager/service/.contracts
+      - ${PWD}/private-keys.json:/opt/generator/MPEG-21-Part-23-DLT-Manager/private-keys.json
