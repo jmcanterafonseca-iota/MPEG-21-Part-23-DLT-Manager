@@ -7,8 +7,9 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-contract Contract {
-    using SafeMath for uint256;
+import "./Contract.sol";
+
+contract Contract2 {
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.UintSet;
     using EnumerableMap for EnumerableMap.AddressToUintMap;
@@ -21,20 +22,14 @@ contract Contract {
     NFToken public _nfToken;
     // Contract deontic expressions token id
     EnumerableSet.UintSet _deonticExpressions;
+
     // Contract objects token id
     EnumerableSet.UintSet _objects;
-    // Contract relations with other contracts
-    EnumerableMap.AddressToUintMap _contractRelations;
-    // Contract related income percentages for payments
-    mapping(address => EnumerableMap.AddressToUintMap) _incomePercentages;
-    // Contract content URI
+
+    // Contract content URI (from Turtle)
     string public _contentUri;
     // Contract content HASH
     bytes public _contentHash;
-
-    IERC20 public _erc20Token;
-
-    address private owner;
 
     event IPRPaymentDone(
         address sender,
@@ -43,29 +38,15 @@ contract Contract {
         uint256 amount
     );
 
-    modifier onlyOwner() {
-        require(
-            msg.sender == owner,
-            "Only the contract owner can call this fucntion"
-        );
-        _;
-    }
-
     constructor(
         bytes memory identifier,
         address[] memory parties,
         NFToken nfToken,
         uint256[] memory deonticExpressionsIds,
         uint256[] memory objects,
-        address[] memory relatedContracts,
-        uint256[] memory relations,
-        address[] memory incomeBeneficiaries,
-        uint256[] memory incomePercentages,
         string memory contentUri,
         bytes memory contentHash
     ) {
-        owner = msg.sender;
-
         _identifier = identifier;
 
         for (uint256 i = 0; i < parties.length; i++) {
@@ -78,60 +59,31 @@ contract Contract {
         for (uint256 i = 0; i < objects.length; i++) {
             _objects.add(objects[i]);
         }
-        for (uint256 i = 0; i < relatedContracts.length; i++) {
-            _contractRelations.set(relatedContracts[i], relations[i]);
-        }
-        for (uint256 i = 0; i < incomePercentages.length; ) {
-            EnumerableMap.AddressToUintMap
-                storage incomeMap = _incomePercentages[incomeBeneficiaries[i]];
-            uint256 shares = incomePercentages[i++];
-            for (uint256 j = 0; j < shares; j++) {
-                incomeMap.set(incomeBeneficiaries[i], incomePercentages[i++]);
-            }
-        }
         _contentUri = contentUri;
         _contentHash = contentHash;
     }
 
-    function setERC20Token(address addr) public onlyOwner {
-        _erc20Token = IERC20(addr);
-    }
-
     function payTo(
+        address previousContract,
         address sender,
         address beneficiary,
         uint256 amount,
         string memory onBehalfOf
     ) public {
-        uint256 finalAmount = amount;
+        Contract previousC = Contract(previousContract);
 
-        if (_erc20Token.balanceOf(sender) < amount) {
-            revert("Not enough funds");
-        }
-
-        uint256 l = _incomePercentages[beneficiary].length();
-
-        if (l != 0) {
-            for (uint256 i = 0; i < l; i++) {
-                (
-                    address incomeBeneficiary,
-                    uint256 incomePercentage
-                ) = _incomePercentages[beneficiary].at(i);
-                uint256 subAmount = amount.mul(incomePercentage).div(10000);
-                _erc20Token.transferFrom(sender, incomeBeneficiary, subAmount);
-                finalAmount = finalAmount.sub(subAmount);
-            }
-        } else {
-            revert("Wrong beneficiary");
-        }
-
-        _erc20Token.transferFrom(sender, beneficiary, finalAmount);
+        previousC.payTo(sender, beneficiary, amount, "");
 
         emit IPRPaymentDone(sender, onBehalfOf, beneficiary, amount);
     }
 
-    function payTo(address sender, address beneficiary, uint256 amount) public {
-        return this.payTo(sender, beneficiary, amount, "");
+    function payTo(
+        address previousContract,
+        address sender,
+        address beneficiary,
+        uint256 amount
+    ) public {
+        return payTo(previousContract, sender, beneficiary, amount, "");
     }
 
     function getParties() public view returns (address[] memory) {
@@ -159,19 +111,5 @@ contract Contract {
         }
 
         return objects;
-    }
-
-    function getContractRelations()
-        public
-        view
-        returns (address[] memory, uint256[] memory)
-    {
-        return _contractRelations.getAll();
-    }
-
-    function getIncomePercentagesBy(
-        address sharer
-    ) public view returns (address[] memory, uint256[] memory) {
-        return _incomePercentages[sharer].getAll();
     }
 }
