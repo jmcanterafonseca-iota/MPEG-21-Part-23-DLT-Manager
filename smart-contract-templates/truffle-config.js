@@ -19,12 +19,13 @@
  */
 require('dotenv').config();
 
+const FALLBACK_PROVIDER = "wss://ws.json-rpc.evm.stable.iota-ec.net";
+
 const phrase = process.env.IOTA_WASP_MNEMONIC;
 const url = process.env.IOTA_WASP_URL;
 const chain = process.env.IOTA_WASP_CHAIN;
 
-const endpoint = process.env.IOTA_EVM_ENDPOINT_URL;
-const providerOrUrl = process.env.IOTA_EVM_ENDPOINT_URL;
+const endpoint = process.env.IOTA_EVM_ENDPOINT_URL ?? FALLBACK_PROVIDER;
 
 const HDWalletProvider = require('@truffle/hdwallet-provider');
 
@@ -39,12 +40,19 @@ catch {
 }
 
 // Generic provider for IOTA Wasp
-const iotaProvider = new HDWalletProvider({
-  mnemonic: {
-    phrase,
-  },
-  providerOrUrl,
-});
+let iotaProvider; 
+if (privateKeys.length === 0) {
+  iotaProvider = new HDWalletProvider({
+    providerOrUrl: endpoint,
+    numberOfAddresses: 30,
+    mnemonic : { phrase }
+  });
+} else {
+  iotaProvider = new HDWalletProvider({
+    providerOrUrl: endpoint,
+    privateKeys
+  });
+}
 
 // Provider for stable EBSI network
 let iotaStableEBSIProvider;
@@ -57,7 +65,6 @@ if (privateKeys.length === 0) {
 } else {
   iotaStableEBSIProvider = new HDWalletProvider({
     providerOrUrl: endpoint,
-    numberOfAddresses: 30,
     privateKeys
   });
 }
@@ -65,12 +72,13 @@ if (privateKeys.length === 0) {
 let shimmerEvmProvider;
 if (privateKeys.length === 0) {
   shimmerEvmProvider = new HDWalletProvider({
-    providerOrUrl: process.env.SHIMMER_EVM,
+    providerOrUrl: process.env.SHIMMER_EVM ?? FALLBACK_PROVIDER,
+    numberOfAddresses: 30,
     mnemonic : { phrase }
   });
 } else {
   shimmerEvmProvider = new HDWalletProvider({
-    providerOrUrl: process.env.SHIMMER_EVM,
+    providerOrUrl: process.env.SHIMMER_EVM ?? FALLBACK_PROVIDER,
     privateKeys
   });
 }

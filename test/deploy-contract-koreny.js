@@ -155,7 +155,7 @@ const main = async () => {
     await ipfs.stop();
     console.log(res);
 
-    console.log("Smart Contract address: ", address);
+    console.log(JSON.stringify({ smartContractAddress: address }));
 };
 
 main();
