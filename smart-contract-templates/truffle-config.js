@@ -20,8 +20,9 @@
 require('dotenv').config();
 
 const FALLBACK_PROVIDER = "wss://ws.json-rpc.evm.stable.iota-ec.net";
+const FALLBACK_MNEMONIC = "fabric olympic repair track rough pen inflict believe credit roof uniform web";
 
-const phrase = process.env.IOTA_WASP_MNEMONIC;
+let phrase = process.env.IOTA_WASP_MNEMONIC;
 const url = process.env.IOTA_WASP_URL;
 const chain = process.env.IOTA_WASP_CHAIN;
 
@@ -37,6 +38,11 @@ try {
 }
 catch {
   console.warn("No private keys supplied. Using mnemonic phrase");
+  if (!phrase) {
+    console.warn("No mnemonic phrase supplied. Using fallback mnemonic");
+    // A default phrase is used. This is mostly for building Truffle
+    phrase = FALLBACK_MNEMONIC;
+  }
 }
 
 // Generic provider for IOTA Wasp
