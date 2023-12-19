@@ -62,9 +62,15 @@ app.get("/health", (req, res) => {
     res.json({
         version: APP_VERSION,
         healthy: true,
+
         smartContractNFTAddress: process.env.NFT_SMART_CONTRACT_ADDR,
         smartContractERC20TokenAddress: process.env.ERC20_TOKEN_SMART_CONTRACT_ADDR,
-        fundingAccount: getFundingAccount()
+
+        fundingAccount: getFundingAccount(),
+        evmEndpoint: process.env.IOTA_EVM_ENDPOINT_URL,
+        chainId: process.env.IOTA_WASP_CHAIN_ID,
+        
+        walletEndpoint: process.env.WALLET_SERVICE_URL
     });
 });
 
