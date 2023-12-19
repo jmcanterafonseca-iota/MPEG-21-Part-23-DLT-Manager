@@ -39,14 +39,32 @@ const wsServer = new ws.Server({ noServer: true });
 // Web socket connections
 const connections = {};
 
-const APP_VERSION = "0.1.0";
+const APP_VERSION = "0.1.1";
 
 const { generate } = require("./generation.js");
+
+const PRIVATE_KEYS_FILE = "./private-keys.json";
+
+function getFundingAccount() {
+    if (fs.existsSync(PRIVATE_KEYS_FILE)) {
+        const keys = fs.readFileSync(PRIVATE_KEYS_FILE);
+        const keysJson = JSON.parse(keys.toString());
+
+        const Web3 = require("web3");
+        const web3Service = new Web3();
+        return web3Service.eth.accounts.privateKeyToAccount(keysJson[0]).address;
+    } else {
+        appLogger.warn("No private keys file found");
+    }
+}
 
 app.get("/health", (req, res) => {
     res.json({
         version: APP_VERSION,
         healthy: true,
+        smartContractNFTAddress: process.env.NFT_SMART_CONTRACT_ADDR,
+        smartContractERC20TokenAddress: process.env.ERC20_TOKEN_SMART_CONTRACT_ADDR,
+        fundingAccount: getFundingAccount()
     });
 });
 
