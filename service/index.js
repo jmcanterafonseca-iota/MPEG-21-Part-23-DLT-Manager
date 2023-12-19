@@ -39,11 +39,11 @@ const wsServer = new ws.Server({ noServer: true });
 // Web socket connections
 const connections = {};
 
-const APP_VERSION = "0.1.1";
+const APP_VERSION = "0.1.2";
 
 const { generate } = require("./generation.js");
 
-const PRIVATE_KEYS_FILE = "./private-keys.json";
+const PRIVATE_KEYS_FILE = "../private-keys.json";
 
 function getFundingAccount() {
     if (fs.existsSync(PRIVATE_KEYS_FILE)) {
