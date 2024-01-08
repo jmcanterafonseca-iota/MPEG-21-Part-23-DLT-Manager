@@ -49,9 +49,9 @@ function generateFromTurtle(turtleSpec, requestId, contractTemplate, progressCon
     ps.stderr.on("data", (data) => {
         console.error(`stderr: ${data}`);
         if (progressConnection) {
-            progressConnection.send("<error>");
+            progressConnection.send("<errorMsg>\n");
             progressConnection.send(`${data}`);
-            progressConnection.send("</error>");
+            progressConnection.send("</errorMsg>\n");
         }
     });
 
@@ -59,6 +59,8 @@ function generateFromTurtle(turtleSpec, requestId, contractTemplate, progressCon
         appLogger.debug(`MCO generation process exited with code ${code}`);
         if (code !== 0) {
             appLogger.error("There was an error generating the MCO objects");
+            progressConnection.send("There was an error generating the MCO objects");
+            progressConnection.send("<error/>\n");
         } else {
             appLogger.debug("Now generating the contract and writing it to the Ledger");
             generateFromMcoFile(mcoFileName, requestId, contractTemplate, progressConnection);
@@ -99,9 +101,9 @@ function generateFromMcoFile(fileName, requestId, contractTemplate, progressConn
 
     ps.stderr.on("data", (data) => {
         if (progressConnection) {
-            progressConnection.send("<error>");
+            progressConnection.send("<errorMsg>\n");
             progressConnection.send(`${data}`);
-            progressConnection.send("</error>");
+            progressConnection.send("</errorMsg>\n");
         }
         console.error(`stderr: ${data}`);
     });
@@ -111,6 +113,8 @@ function generateFromMcoFile(fileName, requestId, contractTemplate, progressConn
         if (progressConnection) {
             if (code === 0) {
                 progressConnection.send("<success/>");
+            } else {
+                progressConnection.send("<error/>\n");
             }
         }
     });
