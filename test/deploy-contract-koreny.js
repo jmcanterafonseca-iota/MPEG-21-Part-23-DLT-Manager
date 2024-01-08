@@ -69,7 +69,7 @@ function prepare() {
             const content = fs.readFileSync(PRIVATE_KEYS_FILE);
             privateKeys = JSON.parse(content);
         } catch {
-            console.warn("No private keys supplied. Using mnemonic phrase");
+            console.log("WARN: No private keys supplied. Using mnemonic phrase");
         }
     }
 
