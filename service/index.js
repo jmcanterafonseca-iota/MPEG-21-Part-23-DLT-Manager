@@ -39,7 +39,7 @@ const wsServer = new ws.Server({ noServer: true });
 // Web socket connections
 const connections = {};
 
-const APP_VERSION = "0.1.2";
+const APP_VERSION = "0.1.3";
 
 const { generate } = require("./generation.js");
 
