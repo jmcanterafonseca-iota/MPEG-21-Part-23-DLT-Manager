@@ -50,7 +50,7 @@ export class WalletService {
 			}
 		}
 
-		console.warn(`No EVM Account found for DID: ${did}`);
+		console.log(`WARN: No EVM Account found for DID: ${did}`);
 		return "";
 		// throw new Error(`No EVM Account found for DID: ${did}`);
 	}
