@@ -39,7 +39,7 @@ const wsServer = new ws.Server({ noServer: true });
 // Web socket connections
 const connections = {};
 
-const APP_VERSION = "0.1.4";
+const APP_VERSION = "0.1.5";
 
 const { generate } = require("./generation.js");
 
@@ -86,9 +86,11 @@ app.post("/generate-contract", (req, res) => {
 
     const requestId = options.requestId;
     const contractTemplate = options.contractTemplate ?? "default";
+    const nftSmartContractAddress = options.nftSmartContractAddress ?? process.env.NFT_SMART_CONTRACT_ADDR;
 
     const progressConnection = connections[requestId];
-    setImmediate(() => generate(data, requestId, contractTemplate, progressConnection));
+    setImmediate(() => generate(data, requestId, contractTemplate, 
+        progressConnection, nftSmartContractAddress));
 
     res.sendStatus(202);
 });
@@ -118,6 +120,7 @@ wsServer.on("connection", (ws, req) => {
 });
 
 const httpServer = app.listen(GENERATION_SERVICE_PORT ?? 3000, () => {
+    appLogger.debug("Service version:", APP_VERSION);
     appLogger.debug(`IPR Contract Generator app listening on port ${GENERATION_SERVICE_PORT ?? 3000}`);
 });
 

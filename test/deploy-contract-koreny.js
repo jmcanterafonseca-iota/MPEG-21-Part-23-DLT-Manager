@@ -92,6 +92,8 @@ function prepare() {
 
         console.log("Using private key file. Addresses: ", provider.getAddresses());
     }
+
+    console.log("Using NFT Smart Contract Address:", NFT_SMART_CONTRACT_ADDR);
 }
 
 const generate = (mco) => {

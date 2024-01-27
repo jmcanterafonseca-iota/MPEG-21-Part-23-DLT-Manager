@@ -6,18 +6,24 @@ const appLogger = new logger.Logger({
     minLevel: 1,
 });
 
-function generate(data, requestId, contractTemplate, progressConnection) {
+function generate(data, requestId, contractTemplate, progressConnection, nftSmartContractAddress) {
     if (data.mediaContractualObjects) {
-        return generateContract(data, requestId, contractTemplate, progressConnection);
+        return generateContract(data, requestId, contractTemplate, progressConnection, nftSmartContractAddress);
     } else if (data.turtle?.value) {
-        return generateFromTurtle(data.turtle.value, requestId, contractTemplate, progressConnection);
+        return generateFromTurtle(
+            data.turtle.value,
+            requestId,
+            contractTemplate,
+            progressConnection,
+            nftSmartContractAddress
+        );
     } else {
         throw new Error("Turtle nor MCO found on the data payload");
     }
 }
 
 // generates and creates and contract from turtle specification
-function generateFromTurtle(turtleSpec, requestId, contractTemplate, progressConnection) {
+function generateFromTurtle(turtleSpec, requestId, contractTemplate, progressConnection, nftSmartContractAddress) {
     appLogger.debug("Generation from Turtle file");
     appLogger.debug(`Contract template to use: '${contractTemplate}'`);
     appLogger.debug(`Request Id: '${requestId}'`);
@@ -63,13 +69,13 @@ function generateFromTurtle(turtleSpec, requestId, contractTemplate, progressCon
             progressConnection.send("<error/>\n");
         } else {
             appLogger.debug("Now generating the contract and writing it to the Ledger");
-            generateFromMcoFile(mcoFileName, requestId, contractTemplate, progressConnection);
+            generateFromMcoFile(mcoFileName, requestId, contractTemplate, progressConnection, nftSmartContractAddress);
         }
     });
 }
 
 // Generates a contract from the MCO JSON Object
-function generateContract(mco, requestId, contractTemplate, progressConnection) {
+function generateContract(mco, requestId, contractTemplate, progressConnection, nftSmartContractAddress) {
     appLogger.debug(`Contract to be generated: '${mco.mediaContractualObjects.contracts[0].class}'`);
     appLogger.debug(`Contract template to use: '${contractTemplate}'`);
     appLogger.debug(`Request Id: '${requestId}'`);
@@ -79,14 +85,22 @@ function generateContract(mco, requestId, contractTemplate, progressConnection) 
 
     fs.writeFileSync(path, JSON.stringify(mco));
 
-    generateFromMcoFile(fileName, requestId, contractTemplate, progressConnection);
+    generateFromMcoFile(fileName, requestId, contractTemplate, progressConnection, nftSmartContractAddress);
 }
 
 // Function that generates and writes the contract from MCO already written file
-function generateFromMcoFile(fileName, requestId, contractTemplate, progressConnection) {
+function generateFromMcoFile(fileName, requestId, contractTemplate, progressConnection, nftSmartContractAddress) {
     const path = `.contracts/mco/${fileName}`;
 
-    const generatorCommand = `MCO_JSON_FILE="service/${path}" CONTRACT_TEMPLATE=${contractTemplate} PRIVATE_KEYS_FILE="./private-keys.json" npx ts-node ./test/deploy-contract-koreny`;
+    appLogger.debug("Smart Contract NFT Address (service level):", nftSmartContractAddress);
+
+    // If the Smart Contract NFT address is overwritten it will be used otherwise the default in the environment
+    let envNftSmartContractAddr = "";
+    if (nftSmartContractAddress) {
+        envNftSmartContractAddr = `NFT_SMART_CONTRACT_ADDR=${nftSmartContractAddress}`;
+    }
+
+    const generatorCommand = `${envNftSmartContractAddr} MCO_JSON_FILE="service/${path}" CONTRACT_TEMPLATE=${contractTemplate} PRIVATE_KEYS_FILE="./private-keys.json" npx ts-node ./test/deploy-contract-koreny`;
 
     appLogger.debug("Contract gen command", generatorCommand);
 
