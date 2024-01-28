@@ -15,7 +15,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-      # no_cache: true
+      no_cache: true
     image: iota-ebsi/ipr-contract-generator:0.1
     restart: unless-stopped
     container_name: ipr-contract-generator
